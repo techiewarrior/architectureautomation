@@ -1,9 +1,11 @@
 # Local .terraform directories
 **/.terraform/*
+**/.venv/*
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
+*.python3_init_done
 
 # Crash log files
 crash.log
