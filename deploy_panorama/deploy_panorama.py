@@ -41,7 +41,7 @@ wdir = str(path.parents[0])+"/terraform/aws/panorama/"
 # If the variable is defined for the script to automatically determine the public IP, then capture the public IP and add it to the Terraform variables.
 # If it isn't then add the IP address block the user defined and add it to the Terraform variables.
 if (os.environ.get('specify_network')) == 'auto':
-    ip = get('https://api.ipify.org').text+"/32"
+    ip = requests.get('https://api.ipify.org', verify=False).text+"/32"
     variables.update(TF_VAR_onprem_IPaddress=ip)
 else:
     variables.update(TF_VAR_onprem_IPaddress=(
