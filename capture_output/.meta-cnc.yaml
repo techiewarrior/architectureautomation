@@ -1,0 +1,48 @@
+name: Capture Output for IP
+# label used for menu selection
+label: Capture Panorama IP
+
+description: |
+  Capture the output from Terraform
+
+# type of skillet (panos or panorama or template or terraform)
+type: python3
+
+# Labels allow grouping and type specific options and are generally only used in advanced cases
+labels:
+  collection:
+    - Reference Architecture Skillet Modules
+
+# variables define the things an operator may customize in this skillet. Things like DNS servers, NTP addresses, etc
+# may be customized for each deployment. Each variable will be rendered as a form field in the panhandler application
+variables:
+  - name: AWS_ACCESS_KEY_ID
+    description: ID
+    default: 
+    type_hint: hidden
+  - name: AWS_SECRET_ACCESS_KEY
+    description: Secret
+    default:
+    type_hint: hidden
+
+# This uses output capturing to get values from the output and set them in the users session. Each subsequent skillet
+# will have access to the captured_username and captured_secret variables from below.
+# Using output capturing from structured data also means no output will be shown to the user. This allows scripts
+# and tools to return XML, JSON or structured text and not be displayed to the user.
+# This example returns JSON data and we capture specific values using jsonpath notation.
+# See https://pypi.org/project/jsonpath-ng/1.4.3/ for examples
+snippets:
+  - name: script
+    file: output_capture.py
+    input_type: env
+    output_type: json
+    outputs:
+      - name: Panorama_IP
+        capture_pattern: 'Primary_IP'
+      - name: Secondary_IP
+        capture_pattern: 'Secondary_IP'
+      - name: Primary_Private_IP
+        capture_pattern: 'Primary_Private_IP'
+      - name: Secondary_Private_IP
+        capture_pattern: 'Secondary_Private_IP'
+

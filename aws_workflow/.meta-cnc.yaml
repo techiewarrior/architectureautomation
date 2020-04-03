@@ -1,0 +1,24 @@
+# workflow demo that cleans the config, does a content update, then configures a basic internet gateway
+
+name: Panorama Workflow
+label: Panorama on AWS
+description: |
+  Panorama Workflow
+
+type: workflow
+
+labels:
+    collection:
+      - Reference Architecture Skillets
+
+snippets:
+# workflow stages for full refresh and configuration
+# reset config to empty state
+  - name: Panorama on AWS
+#    when: "'revert_config' in workflow_options"
+# content updates to latest version
+  - name: Capture Output for IP
+#    when: "'load_updates' in workflow_options"
+# pre step 1 validation to ensure last step dependencies are met
+  - name: Configure Panorama
+#    when: "'pre_validation' in workflow_options"
