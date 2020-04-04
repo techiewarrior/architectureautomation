@@ -18,8 +18,6 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Function to convert seconds to a Hours: Minutes: Seconds display
-
-
 def convert(seconds):
     min, sec = divmod(seconds, 60)
     hour, min = divmod(min, 60)
@@ -41,6 +39,7 @@ wdir = str(path.parents[0])+"/terraform/aws/panorama/"
 # If the variable is defined for the script to automatically determine the public IP, then capture the public IP and add it to the Terraform variables.
 # If it isn't then add the IP address block the user defined and add it to the Terraform variables.
 if (os.environ.get('specify_network')) == 'auto':
+    # Using verify=false in case the container is behind a firewall doing decryption.
     ip = requests.get('https://api.ipify.org', verify=False).text+"/32"
     variables.update(TF_VAR_onprem_IPaddress=ip)
 else:
@@ -81,13 +80,15 @@ if tfcommand == 'apply':
     # Init terraform with the modules and providers.
     container = client.containers.run('hashicorp/terraform:light', 'init -no-color -input=false', auto_remove=True,
                                       volumes_from=socket.gethostname(), working_dir=wdir, environment=variables, detach=True)
-    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and is removed once the run is complete and this loop will exit at that time.
+    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and
+    # is removed once the run is complete and this loop will exit at that time.
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Run terraform apply
     container = client.containers.run('hashicorp/terraform:light', 'apply -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir, environment=variables, detach=True)
-    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and is removed once the run is complete and this loop will exit at that time.
+    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and
+    # is removed once the run is complete and this loop will exit at that time.
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
 
@@ -101,7 +102,7 @@ if tfcommand == 'apply':
     print('The Panorama IP address is '+panorama_ip)
 
     # Inform the user of the secondary Panorama's external IP address
-    if os.environ.get('enable_ha'):
+    if os.environ.get('enable_ha') == "true":
         secondary_ip = (eip['secondary_eip']['value'])
         print('The Secondary Panorama IP address is '+secondary_ip)
 
@@ -164,7 +165,8 @@ elif tfcommand == 'destroy':
     #
     container = client.containers.run('hashicorp/terraform:light', 'destroy -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir, environment=variables, detach=True)
-    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and is removed once the run is complete and this loop will exit at that time.
+    # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and 
+    # is removed once the run is complete and this loop will exit at that time.
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Remove the SSH keys we used to provision Panorama from the container.
