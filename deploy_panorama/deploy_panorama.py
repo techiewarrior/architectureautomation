@@ -65,19 +65,21 @@ if tfcommand == 'apply':
         public_key = key.public_key().public_bytes(
             crypto_serialization.Encoding.OpenSSH,
             crypto_serialization.PublicFormat.OpenSSH).decode('utf-8')
-        # write the keys to the filesystem so they can be used by Ansible later when it sets a password.
+        # Write the keys to the filesystem so they can be used by Ansible later to set a password.
         with open(wdir+"pub", "w") as pubfile, open(wdir+"id_rsa", "w") as privfile:
             privfile.write(private_key)
             pubfile.write(public_key)
         # Add the public key to the variables sent to Terraform so it can create the AWS key pair.
         variables.update(TF_VAR_ra_key=public_key)
+    # If the keys already exist don't recreate them or else you might not be able to access a resource you previously created but havent set the password on.
     else:
         print("Crypto Key exists already, skipping....")
         public_key = open(wdir+"pub", "r")
         # Add the public key to the variables sent to Terraform so it can create the AWS key pair.
         variables.update(TF_VAR_ra_key=public_key.read())
 
-    # Init terraform with the modules and providers.
+    # Init terraform with the modules and providers. The continer will have the some volumes as Panhandler. This allows it to access
+    # the files Panhandler downloaded from the GIT repo. 
     container = client.containers.run('hashicorp/terraform:light', 'init -no-color -input=false', auto_remove=True,
                                       volumes_from=socket.gethostname(), working_dir=wdir, environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and
@@ -92,7 +94,7 @@ if tfcommand == 'apply':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
 
-    # Capture the External IP address of Panorama from the Terraform output
+    # Capture the IP addresses of Panorama using Terraform output
     eip = json.loads(client.containers.run('hashicorp/terraform:light', 'output -json -no-color', auto_remove=True,
                                            volumes_from=socket.gethostname(), working_dir=wdir, environment=variables).decode('utf-8'))
     panorama_ip = (eip['primary_eip']['value'])
@@ -135,6 +137,7 @@ if tfcommand == 'apply':
         else:
             print('Panorama is available')
             break
+    # Once the primary Panorama is available, check the secondary Panorama if there is one.
     if os.environ.get('enable_ha') == "true":
         while 1:
             try:
@@ -160,9 +163,8 @@ if tfcommand == 'apply':
                 print('The Secondary Panorama is available')
                 break
 
-# If the variable is destroy, then destroy the environment
+# If the variable is destroy, then destroy the environment and remove the SSH keys.
 elif tfcommand == 'destroy':
-    #
     container = client.containers.run('hashicorp/terraform:light', 'destroy -auto-approve -no-color -input=false',
                                       auto_remove=True, volumes_from=socket.gethostname(), working_dir=wdir, environment=variables, detach=True)
     # Monitor the log so that the user can see the console output during the run versus waiting until it is complete. The container stops and 
