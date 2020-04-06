@@ -31,7 +31,7 @@ variables:
   - name: vpc_cidr_block
     description: CIDR block for the Management VPC. Code supports a /16 mask through /29
     default: 10.255.0.0/16
-    type_hint: 
+    type_hint: cidr
   - name: specify_network
     description: Do you want to define the network you will access Panorama from manually?
     type_hint: dropdown
@@ -42,7 +42,7 @@ variables:
         value: 'manual'
   - name: onprem_cidr_block
     description: The network and mask (ex:/24) you will access Panorama from
-    tyoe_hint: text
+    tyoe_hint: cidr
     toggle_hint:
       source: specify_network
       value: 'manual' 
