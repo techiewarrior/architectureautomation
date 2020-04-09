@@ -21,7 +21,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def convert(seconds):
     min, sec = divmod(seconds, 60)
     hour, min = divmod(min, 60)
-    return "%d:%02d:%02d" % (hour, min, sec)
+    return '%d:%02d:%02d' % (hour, min, sec)
 
 
 # Pull in the AWS Provider variables. These are set in the Skillet Environment and are hidden variables so the user doesn't need to adjust them everytime.
@@ -34,13 +34,13 @@ tfcommand = (os.environ.get('Init'))
 
 # Define the working directory for the container as the terraform directory and not the directory of the skillet.
 path = Path(os.getcwd())
-wdir = str(path.parents[0])+"/terraform/aws/panorama/"
+wdir = str(path.parents[0])+'/terraform/aws/panorama/'
 
 # If the variable is defined for the script to automatically determine the public IP, then capture the public IP and add it to the Terraform variables.
 # If it isn't then add the IP address block the user defined and add it to the Terraform variables.
 if (os.environ.get('specify_network')) == 'auto':
     # Using verify=false in case the container is behind a firewall doing decryption.
-    ip = requests.get('https://api.ipify.org', verify=False).text+"/32"
+    ip = requests.get('https://api.ipify.org', verify=False).text+'/32'
     variables.update(TF_VAR_onprem_IPaddress=ip)
 else:
     variables.update(TF_VAR_onprem_IPaddress=(
@@ -53,8 +53,8 @@ client = DockerClient()
 # If the variable is set to apply then create the environment and check for Panorama availabliity
 if tfcommand == 'apply':
     # Generate a new RSA keypair to use to SSH to the VM. If you are using your own automation outside of Panhandler then you should use your own keys.
-    if os.path.exists(wdir+"id_rsa") != True:
-        print("Generating Crypto Key")
+    if os.path.exists(wdir+'id_rsa') != True:
+        print('Generating Crypto Key')
         key = rsa.generate_private_key(
             backend=crypto_default_backend(),
             public_exponent=65537,
@@ -67,15 +67,15 @@ if tfcommand == 'apply':
             crypto_serialization.Encoding.OpenSSH,
             crypto_serialization.PublicFormat.OpenSSH).decode('utf-8')
         # Write the keys to the filesystem so they can be used by Ansible later to set a password.
-        with open(wdir+"pub", "w") as pubfile, open(wdir+"id_rsa", "w") as privfile:
+        with open(wdir+'pub', 'w') as pubfile, open(wdir+'id_rsa', 'w') as privfile:
             privfile.write(private_key)
             pubfile.write(public_key)
         # Add the public key to the variables sent to Terraform so it can create the AWS key pair.
         variables.update(TF_VAR_ra_key=public_key)
     # If the keys already exist don't recreate them or else you might not be able to access a resource you previously created but havent set the password on.
     else:
-        print("Crypto Key exists already, skipping....")
-        public_key = open(wdir+"pub", "r")
+        print('Crypto Key exists already, skipping....')
+        public_key = open(wdir+'pub', 'r')
         # Add the public key to the variables sent to Terraform so it can create the AWS key pair.
         variables.update(TF_VAR_ra_key=public_key.read())
 
@@ -105,7 +105,7 @@ if tfcommand == 'apply':
     print('The Panorama IP address is '+panorama_ip)
 
     # Inform the user of the secondary Panorama's external IP address
-    if os.environ.get('enable_ha') == "true":
+    if os.environ.get('enable_ha') == 'true':
         secondary_ip = (eip['secondary_eip']['value'])
         print('The Secondary Panorama IP address is '+secondary_ip)
 
@@ -120,44 +120,40 @@ if tfcommand == 'apply':
             request = requests.get(
                 'https://'+panorama_ip, verify=False, timeout=5)
         except requests.ConnectionError as e:
-            print(
-                "Panorama is still booting.... ["+convert(temptime)+'s elapsed]')
+            print('Panorama is still booting.... ['+convert(temptime)+'s elapsed]')
             time.sleep(5)
             temptime = temptime+10
             continue
         except requests.Timeout as e:
-            print("Timeout Error")
+            print('Timeout Error')
             time.sleep(5)
             temptime = temptime+10
             continue
         except requests.RequestException as e:
-            print(
-                "General Error - this normally isn't a problem as the script will keep retrying")
+            print("General Error - this normally isn't a problem as the script will keep retrying")
             print(str(e))
             continue
         else:
             print('Panorama is available')
             break
     # Once the primary Panorama is available, check the secondary Panorama if there is one.
-    if os.environ.get('enable_ha') == "true":
+    if os.environ.get('enable_ha') == 'true':
         while 1:
             try:
                 request = requests.get(
                     'https://'+secondary_ip, verify=False, timeout=5)
             except requests.ConnectionError as e:
-                print(
-                    "The Secondary Panorama is still booting.... ["+convert(temptime)+'s elapsed]')
+                print('The Secondary Panorama is still booting.... ['+convert(temptime)+'s elapsed]')
                 time.sleep(5)
                 temptime = temptime+10
                 continue
             except requests.Timeout as e:
-                print("Timeout Error")
+                print('Timeout Error')
                 time.sleep(5)
                 temptime = temptime+10
                 continue
             except requests.RequestException as e:
-                print(
-                    "General Error - this normally isn't a problem as the script will keep retrying")
+                print("General Error - this normally isn't a problem as the script will keep retrying")
                 print(str(e))
                 continue
             else:
@@ -173,11 +169,11 @@ elif tfcommand == 'destroy':
     for line in container.logs(stream=True):
         print(line.decode('utf-8').strip())
     # Remove the SSH keys we used to provision Panorama from the container.
-    print("Removing local keys....")
+    print('Removing local keys....')
     try:
-        os.remove(wdir+"pub")
-        os.remove(wdir+"id_rsa")
+        os.remove(wdir+'pub')
+        os.remove(wdir+'id_rsa')
     except:
-        print("  There where no keys to remove")
+        print('  There where no keys to remove')
 
 sys.exit(0)

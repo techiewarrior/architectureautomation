@@ -1,5 +1,0 @@
-[panorama]
-primary-panorama ip_address=52.39.238.208 serialnumber=0007SE05567
-
-[panorama:vars]
-ansible_python_interpreter=/usr/bin/python
