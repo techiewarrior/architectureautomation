@@ -27,8 +27,8 @@ def convert(seconds):
 # Pull in the AWS Provider variables. These are set in the Skillet Environment and are hidden variables so the user doesn't need to adjust them everytime.
 variables = dict(AWS_ACCESS_KEY_ID=os.environ.get('AWS_ACCESS_KEY_ID'),
                  AWS_SECRET_ACCESS_KEY=os.environ.get('AWS_SECRET_ACCESS_KEY'), TF_IN_AUTOMATION='True')
-variables.update(TF_VAR_deployment_name=os.environ.get('deployment_name'), TF_VAR_vpc_cidr_block=os.environ.get(
-                'vpc_cidr_block'), TF_VAR_enable_ha=os.environ.get('enable_ha'))
+variables.update(TF_VAR_deployment_name=os.environ.get('DEPLOYMENT_NAME'), TF_VAR_vpc_cidr_block=os.environ.get(
+                'vpc_cidr_block'), TF_VAR_enable_ha=os.environ.get('enable_ha'), TF_VAR_aws_region=os.environ.get('AWS_REGION'))
 # A variable the defines if we are creating or destroying the environment via terraform. Set in the dropdown on Panhandler.
 tfcommand = (os.environ.get('Init'))
 
