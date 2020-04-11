@@ -12,7 +12,7 @@ variable security_group {
 
 variable aws_region {}
 
-variable availability-zones {}
+variable availability_zones {}
 
 variable aws_key {}
 
@@ -86,11 +86,11 @@ module "newbits" {
 # Create a subnet for the primary Panorama 
 resource "aws_subnet" "management_subnet_primary" {
   vpc_id = aws_vpc.management-vpc.id
-  availability_zone = var.availability-zones[0]
+  availability_zone = var.availability_zones[0]
   # Define the subnet as the first subnet in the range
   cidr_block = cidrsubnet(aws_vpc.management-vpc.cidr_block, module.newbits.newbits, 0)
    tags = {
-    Name = "${var.name} - ${var.availability-zones[0]}"
+    Name = "${var.name} - ${var.availability_zones[0]}"
   }
 }
 
@@ -184,11 +184,11 @@ resource "aws_instance" "panorama" {
 resource "aws_subnet" "management_subnet_secondary" {
   count = var.enable_ha ? 1 : 0
   vpc_id = aws_vpc.management-vpc.id
-  availability_zone = var.availability-zones[1]
+  availability_zone = var.availability_zones[1]
   # Set the subnet to the second subnet in the range.  
   cidr_block = cidrsubnet(aws_vpc.management-vpc.cidr_block, module.newbits.newbits, 1)
    tags = {
-    Name = "${var.name} - ${var.availability-zones[1]}"
+    Name = "${var.name} - ${var.availability_zones[1]}"
   }
 }
 

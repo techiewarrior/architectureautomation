@@ -43,8 +43,7 @@ if (os.environ.get('specify_network')) == 'auto':
     ip = requests.get('https://api.ipify.org', verify=False).text+'/32'
     variables.update(TF_VAR_onprem_IPaddress=ip)
 else:
-    variables.update(TF_VAR_onprem_IPaddress=(
-        os.environ.get('onprem_cidr_block')))
+    variables.update(TF_VAR_onprem_IPaddress=(os.environ.get('onprem_cidr_block')))
 
 # The script uses a terraform docker container to run the terraform plan. The script uses the docker host that panhandler is running on to run the new 
 # conatiner. /var/lib/docker.sock must be mounted on panhandler
