@@ -13,7 +13,7 @@ variables = {
     "s_peer": os.environ.get('Primary_Private_IP')
 }
 
-ansible_variables = "\"password="+os.environ.get('Password')+" primary_otp="+os.environ.get('OTP')+" secondary_otp="+os.environ.get('Secondary_OTP')+"\""
+ansible_variables = "\"password="+os.environ.get('PASSWORD')+" primary_otp="+os.environ.get('OTP')+" secondary_otp="+os.environ.get('Secondary_OTP')+"\""
 
 if os.environ.get('enable_ha')=="true":
     inventory_template = env.get_template('ha_inventory.txt')

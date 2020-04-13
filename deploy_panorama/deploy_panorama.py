@@ -11,7 +11,7 @@ from pathlib import Path
 from docker import DockerClient
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.backends import default_backend as crypto_default_backend
+from cryptography.hazmat.backends import default_backend as crypto_default_backend 
 
 # This setting change removes the warnings when the script tries to connect to Panorama and check its availability
 import urllib3
