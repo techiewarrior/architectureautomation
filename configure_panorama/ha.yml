@@ -49,7 +49,7 @@
         password: '{{ password }}'
       cmd: "{{'request plugins cloud_services panorama-certificate fetch otp ' + secondary_otp }}"
     register: result
-    failed_when: result.stdout.find("Failure") 
+    failed_when: "'Failure' in result.stdout" 
   - name: Configure high-availability
     panos_type_cmd:
       provider:
