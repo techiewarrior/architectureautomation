@@ -24,7 +24,7 @@ variables:
     description: Secret
     default:
     type_hint: hidden
-  - name: Password
+  - name: PASSWORD
     description: Password for the admin account
     default:
     type_hint: hidden
