@@ -57,6 +57,7 @@ variables:
   - name: enable_otp_ha
     description: Configure Cortex Data Lake
     type_hint: dropdown
+    default: "false"
     dd_list:
       - key: 'Yes'
         value: "true"
