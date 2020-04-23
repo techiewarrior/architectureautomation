@@ -37,7 +37,7 @@ variables:
     default:
     type_hint: hidden
   - name: enable_ha
-    type_hint: hidden
+    type_hint: text
   - name: Primary_Serial
     description: Serial Number for the Primary Panorama
     default:
