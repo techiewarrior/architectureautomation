@@ -43,10 +43,21 @@ variables:
     description: Serial Number for the Primary Panorama
     default:
     type_hint: text
+  - name: enable_otp
+    description: Configure Cortex Data Lake
+    type_hint: dropdown
+    dd_list:
+      - key: 'Yes'
+        value: "true"
+      - key: 'No'
+        value: "false"
   - name: OTP
     description: OTP for the Primary Panorama from the support portal
     default:
     type_hint: text
+    toggle_hint:
+      source: enable_otp
+      value: 'true' 
   - name: Secondary_Serial
     description: Serial Number for the Secondary Panorama
     default:
