@@ -51,6 +51,20 @@ variables:
         value: "true"
       - key: 'No'
         value: "false"
+    toggle_hint:
+      source: enable_ha
+      value: 'false' 
+  - name: enable_otp_ha
+    description: Configure Cortex Data Lake
+    type_hint: dropdown
+    dd_list:
+      - key: 'Yes'
+        value: "true"
+      - key: 'No'
+        value: "false"
+    toggle_hint:
+      source: enable_ha
+      value: 'true' 
   - name: OTP
     description: OTP for the Primary Panorama from the support portal
     default:
@@ -71,6 +85,9 @@ variables:
     type_hint: text
     toggle_hint:
       source: enable_ha
+      value: 'true'
+    toggle_hint:
+      source: enable_otp_ha
       value: 'true' 
   - name: Primary_Private_IP
     description: Private or Internal IP
