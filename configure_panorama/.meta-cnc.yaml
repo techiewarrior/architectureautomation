@@ -52,7 +52,7 @@ variables:
         value: "false"
     toggle_hint:
       source: enable_ha
-      value: 'false' 
+      value: "false" 
   - name: enable_otp_ha
     description: Configure Cortex Data Lake
     type_hint: dropdown
@@ -74,21 +74,19 @@ variables:
       value: 'true' 
   - name: Secondary_Serial
     description: Serial Number for the Secondary Panorama
-    default:
     type_hint: text
     toggle_hint:
       source: enable_ha
       value: 'true' 
   - name: Secondary_OTP
     description: OTP for Second Panorama from the support portal
-    default:
     type_hint: text
     toggle_hint:
       source: enable_ha
-      value: 'true'
+      value: "true"
     toggle_hint:
       source: enable_otp_ha
-      value: 'true' 
+      value: "true"
   - name: Primary_Private_IP
     description: Private or Internal IP
     default:
